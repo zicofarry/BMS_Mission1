@@ -1,0 +1,10 @@
+body { font-family: sans-serif; margin: 0; }
+.app { display: flex; height: 100vh; }
+.sidebar { width: 200px; background: #f4f4f4; border-right: 1px solid #ccc; padding: 10px; }
+.sidebar h3 { margin-top: 0; }
+.main { flex: 1; padding: 10px; overflow: auto; }
+.table-viewer table { border-collapse: collapse; }
+.table-viewer th, .table-viewer td { border: 1px solid #ccc; padding: 0px; }
+.row-form { margin-bottom: 10px; }
+.row-form input { margin-right: 1px; }
+.input-cell {flex: "1"; padding:"8px";width:"100%";}

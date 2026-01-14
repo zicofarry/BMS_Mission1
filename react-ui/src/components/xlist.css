@@ -1,0 +1,153 @@
+body
+{
+  background-color: #99ff99;
+  font-family:arial narrow;
+  font-size:16px;
+}
+
+.ta_right
+{
+text-align:right;
+}
+.ta_left
+{
+text-align:left;
+}
+
+.cmbox
+{
+  width:100px;
+}
+
+.Table1
+{
+  border:1px solid #000000;
+  background-color:#009900;
+  width:200px;
+  text-align:center;
+}
+
+.Table2
+{
+  border:1px solid #000000;
+  background-color:#009900;
+  width:300px;
+  text-align:center;
+}
+.Table3
+{
+  border:1px solid #000000;
+  background-color:#009900;
+}
+.Table4
+{
+  border:1px solid #000000;
+  background-color:#009900;
+  width:500px;
+  text-align:center;
+}
+.Table5
+{
+  border:1px solid #000000;
+  background-color:#009900;
+  width:1000px;
+  text-align:center;
+}
+.Table6
+{
+  border:1px solid #000000;
+  background-color:#009900;
+  width:50%;
+  text-align:center;
+}
+.button1
+{
+  color: #000000;
+  background-color: #009900;
+  border: 1px solid #006600;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  width: 200px;
+  text-align:center;
+}
+.button2
+{
+  color: #000000;
+  background-color: #999999;
+  border: 1px solid #006600;
+  cursor: pointer;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  width: 80px;
+}
+
+.button3
+{
+  color: #000000;
+  background-color: #999999;
+  border: 1px solid #006600;
+  cursor: pointer;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  width: 150px;
+}
+
+.tableHead
+{
+  border:1px solid #000000;
+  background-color:#3366ff;
+  width:300px;
+  text-align:center;
+  text-style:bold;
+}
+.branch
+{
+  margin-left: 16px;
+  font-weight:500;
+  font-size:14px;
+  display:none;
+}
+
+
+.textbox1
+{
+  border: 1px solid #b5b5b5;
+  color: #000000;
+  width: 99%;
+  height: 100%;
+}
+.textbox2
+{
+  border: 1px solid #b5b5b5;
+  color: #000000;
+  width: 99%;
+  height: 100%;
+  text-align: right;
+}
+.textbox3
+{
+  border: 1px solid #b5b5b5;
+  color: #000000;
+  width: 99%;
+  height: 100%;
+  text-align: center;
+}
+.textbox4
+{
+  border: 1px solid #b5b5b5;
+  color: #000000;
+  background-color: #009900;
+  width: 99%;
+  height: 100%;
+  text-align: center;
+}
+.textbox_ro
+{
+  border: 1px solid #b5b5b5;
+  color: #000000;
+  width: 99%;
+  height: 100%;
+  text-align: center;
+  disabled:true;
+}
+

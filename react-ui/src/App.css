@@ -1,0 +1,35 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* full screen */
+  font-family: sans-serif;
+}
+
+.header {
+  background-color: #2563eb; /* biru */
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.navigator {
+  width: 250px;
+  background: #f3f4f6;
+  border-right: 1px solid #ddd;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: #fff;
+}
