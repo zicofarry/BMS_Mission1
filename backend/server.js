@@ -43,7 +43,7 @@ app.get("/count/:dbname/:table", (req, res) => {
 });
 
 app.get("/dataPage/:dbname/:table/:no/:length", (req, res) => {
-  handleDbRequest(req, res, async (db) => db.getDataPage(req.params.table,req.params.no,req.params.length));
+  handleDbRequest(req, res, async (db) => db.getDataPage(req.params.table, req.params.no, req.params.length));
 });
 app.get("/primarykey/:dbname/:table", (req, res) => {
   handleDbRequest(req, res, async (db) => ({
@@ -54,6 +54,13 @@ app.get("/maxno/:dbname/:table", (req, res) => {
   handleDbRequest(req, res, async (db) => {
     const result = await db.get(`SELECT MAX(NO) AS max FROM ${req.params.table}`);
     return result;
+  });
+});
+
+// Get table schema (column types) for validation
+app.get("/schema/:dbname/:table", (req, res) => {
+  handleDbRequest(req, res, async (db) => {
+    return await db.getSchema(req.params.table);
   });
 });
 /*
@@ -68,41 +75,128 @@ app.post("/savePage/:dbname/:table", (req, res) => {
     const table = req.params.table;
     const rows = req.body;
 
+    // Get primary key column name and schema
+    const pkColumn = await db.getPrimaryKey(table) || 'NO';
+    const schema = await db.getSchema(table);
+    console.log("Primary key column:", pkColumn);
+
     let inserted = 0;
     let updated = 0;
-console.log(rows);
-    for (const r of rows) {
-      const pk = r.NO;
-console.log("pk=",pk);
-      const exist = await db.get(
-        `SELECT 1 FROM ${table} WHERE NO = ?`,
-        [pk]
-      );
+    const errors = [];
 
-      if (exist) {
-        // UPDATE
-        const keys = Object.keys(r).filter(k => k !== "no");
-        const fields = keys.map(k => `${k}=?`).join(",");
-        const values = keys.map(k => r[k]);
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
 
-        await db.run(
-          `UPDATE ${table} SET ${fields} WHERE NO = ?`,
-          [...values, pk]
-        );
-        updated++;
-      } else {
-        // INSERT
-        const keys = Object.keys(r);
-        const placeholders = keys.map(() => "?").join(",");
-        await db.run(
-          `INSERT INTO ${table} (${keys.join(",")}) VALUES (${placeholders})`,
-          keys.map(k => r[k])
-        );
-        inserted++;
+      // Get pk value - try both cases
+      const pk = r[pkColumn] ?? r[pkColumn.toLowerCase()] ?? r[pkColumn.toUpperCase()];
+      console.log("pk=", pk, "row=", r);
+
+      if (pk === undefined || pk === null) {
+        errors.push({
+          row: i + 1,
+          column: pkColumn,
+          message: `Baris ${i + 1}: Primary key (${pkColumn}) tidak boleh kosong`
+        });
+        continue;
+      }
+
+      // Validate data types before insert/update
+      for (const col of schema) {
+        const value = r[col.name];
+        const type = (col.type || '').toUpperCase();
+
+        if (type.includes('INT') || type.includes('INTEGER')) {
+          // Strict integer check - must be only digits (with optional leading minus)
+          if (value !== null && value !== '' && value !== undefined) {
+            const strVal = String(value).trim();
+            if (!/^-?\d+$/.test(strVal)) {
+              errors.push({
+                row: pk,
+                column: col.name,
+                value: value,
+                message: `${pkColumn}=${pk}, Kolom "${col.name}": harus berupa angka bulat (nilai: "${value}")`
+              });
+            }
+          }
+        } else if (type.includes('REAL') || type.includes('FLOAT') || type.includes('DOUBLE')) {
+          // Strict float check
+          if (value !== null && value !== '' && value !== undefined) {
+            const strVal = String(value).trim();
+            if (!/^-?\d+(\.\d+)?$/.test(strVal)) {
+              errors.push({
+                row: pk,
+                column: col.name,
+                value: value,
+                message: `${pkColumn}=${pk}, Kolom "${col.name}": harus berupa angka (nilai: "${value}")`
+              });
+            }
+          }
+        }
       }
     }
 
-    return { inserted, updated };
+    // If there are validation errors, return them without saving
+    if (errors.length > 0) {
+      return {
+        success: false,
+        inserted: 0,
+        updated: 0,
+        errors: errors
+      };
+    }
+
+    // No validation errors, proceed with save
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      const pk = r[pkColumn] ?? r[pkColumn.toLowerCase()] ?? r[pkColumn.toUpperCase()];
+
+      if (pk === undefined || pk === null) continue;
+
+      try {
+        const exist = await db.get(
+          `SELECT 1 FROM ${table} WHERE ${pkColumn} = ?`,
+          [pk]
+        );
+
+        if (exist) {
+          // UPDATE
+          const keys = Object.keys(r).filter(k => k.toUpperCase() !== pkColumn.toUpperCase());
+          const fields = keys.map(k => `${k}=?`).join(",");
+          const values = keys.map(k => r[k]);
+
+          await db.run(
+            `UPDATE ${table} SET ${fields} WHERE ${pkColumn} = ?`,
+            [...values, pk]
+          );
+          updated++;
+        } else {
+          // INSERT
+          const keys = Object.keys(r);
+          const placeholders = keys.map(() => "?").join(",");
+          await db.run(
+            `INSERT INTO ${table} (${keys.join(",")}) VALUES (${placeholders})`,
+            keys.map(k => r[k])
+          );
+          inserted++;
+        }
+      } catch (err) {
+        errors.push({
+          row: pk,
+          message: `${pkColumn}=${pk}: ${err.message}`
+        });
+      }
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        inserted,
+        updated,
+        errors
+      };
+    }
+
+    return { success: true, inserted, updated };
   });
 });
 
