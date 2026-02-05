@@ -9,6 +9,8 @@ export default function UnifiedTable({
     title,
     subtitle,
     columnConfig, // Optional: custom column configuration
+    readOnly = false, // If true, hide edit/add/delete buttons
+    showUpdateButton = false, // If true, show "Update Data" button (for source table)
 }) {
     // State
     const [rows, setRows] = useState([]);
@@ -344,40 +346,57 @@ export default function UnifiedTable({
             {/* Toolbar */}
             <div className="table-toolbar">
                 <div className="toolbar-left">
-                    <button className="btn btn-primary" onClick={handleAddRow}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        Tambah Data
-                    </button>
-
-                    {editMode ? (
-                        <>
-                            <button className="btn btn-success" onClick={handleToggleEdit}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                                    <polyline points="17 21 17 13 7 13 7 21" />
-                                    <polyline points="7 3 7 8 15 8" />
-                                </svg>
-                                Simpan
-                            </button>
-                            <button className="btn btn-secondary" onClick={handleCancelEdit}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                    <line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                                Batal
-                            </button>
-                        </>
-                    ) : (
-                        <button className="btn btn-warning" onClick={handleToggleEdit}>
+                    {!readOnly && (
+                        <button className="btn btn-primary" onClick={handleAddRow}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
                             </svg>
-                            Ubah
+                            Tambah Data
                         </button>
+                    )}
+
+                    {!readOnly && (
+                        <>
+                            {editMode ? (
+                                <>
+                                    <button className="btn btn-success" onClick={handleToggleEdit}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                            <polyline points="17 21 17 13 7 13 7 21" />
+                                            <polyline points="7 3 7 8 15 8" />
+                                        </svg>
+                                        Simpan
+                                    </button>
+                                    <button className="btn btn-secondary" onClick={handleCancelEdit}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <line x1="18" y1="6" x2="6" y2="18" />
+                                            <line x1="6" y1="6" x2="18" y2="18" />
+                                        </svg>
+                                        Batal
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="btn btn-warning" onClick={handleToggleEdit}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                    Ubah
+                                </button>
+                            )}
+                        </>
+                    )}
+
+                    {readOnly && (
+                        <span className="read-only-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                            Read Only
+                        </span>
                     )}
                 </div>
 
